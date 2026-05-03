@@ -1,0 +1,73 @@
+﻿<Window x:Class="Inventory.WPF.Views.EditUserWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Editar Usuario"
+        Height="350"
+        Width="350"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="#f5f7fa">
+
+    <Border Background="White" CornerRadius="10" Padding="20" Margin="10">
+
+        <Grid>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- HEADER -->
+            <TextBlock Text="Editar Usuario"
+                       FontSize="18"
+                       FontWeight="Bold"
+                       Margin="0,0,0,15"/>
+
+            <!-- FORM -->
+            <StackPanel Grid.Row="1">
+
+                <TextBlock Text="Contacto"/>
+                <TextBox Text="{Binding Contact}"
+                         Height="30"
+                         Margin="0,5,0,0"/>
+
+                <TextBlock Text="Área" Margin="0,10,0,0"/>
+                <ComboBox ItemsSource="{Binding Areas}"
+                          SelectedItem="{Binding SelectedArea}"
+                          DisplayMemberPath="Name"
+                          Height="30"/>
+
+                <TextBlock Text="Rol" Margin="0,10,0,0"/>
+                <ComboBox ItemsSource="{Binding Roles}"
+                          SelectedItem="{Binding SelectedRole}"
+                          DisplayMemberPath="Name"
+                          Height="30"/>
+
+            </StackPanel>
+
+            <!-- BOTONES (SIEMPRE VISIBLES) -->
+            <StackPanel Grid.Row="2"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Margin="0,20,0,0">
+
+                <Button Content="Cancelar"
+                        Width="90"
+                        Margin="0,0,10,0"
+                        Click="Cancel_Click"/>
+
+                <Button Content="Guardar"
+                        Width="90"
+                        Background="#198754"
+                        Foreground="White"
+                        BorderThickness="0"
+                        Command="{Binding SaveCommand}"
+                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
+
+            </StackPanel>
+
+        </Grid>
+
+    </Border>
+</Window>
