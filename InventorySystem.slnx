@@ -3,7 +3,7 @@
   <Project Path="src/Inventory.Application/Inventory.Application.csproj" Id="fd5cbb16-cc1c-4110-8481-3d52b716e775" />
   <Project Path="src/Inventory.CrossCutting/Inventory.CrossCutting.csproj" Id="d106c418-6255-4d11-8727-0db72f3b22f6" />
   <Project Path="src/Inventory.Database/Inventory.Database.sqlproj" Id="4968d864-49fc-4f61-b925-65a93c2ce9cc">
-    <Build />
+    <Build Solution="Release|*" />
     <Deploy />
   </Project>
   <Project Path="src/Inventory.Domain/Inventory.Domain.csproj" Id="146f9419-d40a-40ae-a1ce-05ae926cd463" />
