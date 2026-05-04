@@ -80,7 +80,7 @@ sequenceDiagram
 ## 🧩 Tecnologías utilizadas
 
 - .NET Core 8 (API)
-- .NET WPF
+- .NET Framework 4.8 WPF
 - MediatR (CQRS)
 - SQL Server (Stored Procedures)
 - ADO.NET
@@ -155,7 +155,7 @@ Ejecutar:
 dotnet run
 
 Abrir:
-http://localhost:xxxx/swagger
+http://localhost:xxxx
 
 ---
 
