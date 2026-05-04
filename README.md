@@ -13,7 +13,6 @@ Sistema de gestión de usuarios, áreas, roles y auditoría basado en arquitectu
 
 ```mermaid
 flowchart LR
-
     UI["WPF Client (MVVM)"]
     API["Inventory.API Controllers"]
     APP["Application Layer (CQRS + Handlers)"]
@@ -26,18 +25,14 @@ flowchart LR
     APP --> DOMAIN
     APP --> INFRA
     INFRA --> DB
-
+```
 
 ---
 
-# ✅ DIAGRAMA CQRS COMMAND (CORREGIDO)
-
-```md
-## 🔁 Flujo CQRS - Command
+## 🔁 Flujo CQRS - Command (Crear Usuario)
 
 ```mermaid
 sequenceDiagram
-
     participant UI as WPF
     participant API as Controller
     participant MediatR
@@ -49,22 +44,19 @@ sequenceDiagram
     API->>MediatR: Send(CreateUserCommand)
     MediatR->>Handler: Handle()
     Handler->>Repo: Create(user)
-    Repo->>DB: Execute SP sp_CreateUser
+    Repo->>DB: Execute sp_CreateUser
     DB-->>Repo: OK
     Repo-->>Handler: OK
     Handler-->>API: OK
     API-->>UI: 200 OK
+```
 
 ---
 
-# ✅ DIAGRAMA CQRS QUERY (CORREGIDO)
-
-```md
-## 🔍 Flujo CQRS - Query
+## 🔍 Flujo CQRS - Query (Obtener Usuarios)
 
 ```mermaid
 sequenceDiagram
-
     participant UI as WPF
     participant API as Controller
     participant MediatR
@@ -76,157 +68,188 @@ sequenceDiagram
     API->>MediatR: Send(GetUsersQuery)
     MediatR->>Handler: Handle()
     Handler->>Repo: GetLast()
-    Repo->>DB: Execute SP sp_GetLastUsers
+    Repo->>DB: Execute sp_GetLastUsers
     DB-->>Repo: Result
     Repo-->>Handler: Data
     Handler-->>API: DTO List
     API-->>UI: JSON
+```
 
-# 🧩 Tecnologías utilizadas
+---
+
+## 🧩 Tecnologías utilizadas
 
 - .NET Core 8 (API)
-- .NET Framework (WPF)
+- .NET WPF
 - MediatR (CQRS)
 - SQL Server (Stored Procedures)
 - ADO.NET
 - WPF + MVVM
-- Swagger (documentación API)
+- Swagger
 
 ---
 
-# ⚙️ Funcionalidades principales
+## ⚙️ Funcionalidades principales
 
-## 👤 Usuarios
-
+### 👤 Usuarios
 - Crear usuario
 - Editar usuario
 - Eliminación lógica (soft delete)
 - Reactivación de usuario
-- Validaciones avanzadas:
-  - Nombre (sin duplicados fuzzy)
-  - Contacto (numérico)
-  - Email (formato válido)
+- Validaciones:
+  - Nombre sin duplicados (fuzzy)
+  - Contacto numérico
+  - Email válido
   - Documento único
 
-## 🏢 Áreas y Roles
-
+### 🏢 Áreas y Roles
 - Consulta de áreas
 - Consulta de roles
 - Relación con usuarios
 
-## 📄 Tipo de documento
-
+### 📄 Tipo de documento
 - Gestión de tipos de documento
 - Relación con usuarios
 
-## 🧾 Auditoría
-
-- Registro automático en cada operación
+### 🧾 Auditoría
+- Registro automático de acciones
 - Historial de cambios
 
 ---
 
-# 🔁 Flujo de arquitectura
+## 🔁 Flujo general
+
 WPF → API → Application → Domain → Infrastructure → DB
 
-
 ---
 
-# 🚀 Cómo ejecutar el proyecto
+## 🚀 Cómo ejecutar el proyecto
 
-## 🔧 1. Base de datos
+### 🔧 1. Base de datos
 
 1. Abrir SQL Server
-2. Ejecutar scripts desde: Inventory.Database
+2. Ejecutar scripts desde:
+Inventory.Database
 
-
-Orden recomendado:
-
-1. Tablas
-2. Funciones
-3. Stored Procedures
+Orden:
+1. Tablas  
+2. Funciones  
+3. Stored Procedures  
 
 ---
 
-## 🔧 2. API
+### 🔧 2. API
 
-1. Ir al proyecto: Inventory.API
+Ir a:
+Inventory.API
 
-2. Configurar conexión en `appsettings.json`:
+Configurar appsettings.json:
 
-"ConnectionStrings": {
-  "DefaultConnection": "Server=.;Database=InventoryDB;User Id=sa;Password=tu_password;"
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=.;Database=InventoryDB;User Id=sa;Password=tu_password;"
+  }
 }
 
-3. dotnet run
+Ejecutar:
+dotnet run
 
-4. http://localhost:xxxx
+Abrir:
+http://localhost:xxxx/swagger
 
-5. Ir a: Inventory.WPF
+---
 
-6. Configurar URL API en App.config:
+### 🖥️ 3. WPF
+
+Ir a:
+Inventory.WPF
+
+Configurar App.config:
 
 <appSettings>
   <add key="ApiBaseUrl" value="https://localhost:xxxx/api/" />
 </appSettings>
 
-7. Ejecutar proyecto
+Ejecutar proyecto
 
-🔌 Endpoints principales
+---
 
-👤 Users
-| Método | Endpoint                 |
-| ------ | ------------------------ |
-| GET    | /api/users               |
-| POST   | /api/users               |
-| PUT    | /api/users/{id}/contact  |
-| DELETE | /api/users/{id}          |
+## 🔌 Endpoints principales
+
+### 👤 Users
+
+| Método | Endpoint |
+|--------|----------|
+| GET    | /api/users |
+| POST   | /api/users |
+| PUT    | /api/users/{id}/contact |
+| DELETE | /api/users/{id} |
 | PUT    | /api/users/{id}/activate |
 
-🏢 Areas
-| Método | Endpoint   |
-| ------ | ---------- |
+---
+
+### 🏢 Areas
+
+| Método | Endpoint |
+|--------|----------|
 | GET    | /api/areas |
 | POST   | /api/areas |
 
-🧾 Roles
-| Método | Endpoint   |
-| ------ | ---------- |
+---
+
+### 🧾 Roles
+
+| Método | Endpoint |
+|--------|----------|
 | GET    | /api/roles |
 | POST   | /api/roles |
 
-📄 TypeDocuments
-| Método | Endpoint            |
-| ------ | ------------------- |
+---
+
+### 📄 TypeDocuments
+
+| Método | Endpoint |
+|--------|----------|
 | GET    | /api/type-documents |
 
-📊 Audit
-| Método | Endpoint   |
-| ------ | ---------- |
+---
+
+### 📊 Audit
+
+| Método | Endpoint |
+|--------|----------|
 | GET    | /api/audit |
 
-🎯 Comportamiento clave (Soft Delete)
-IsActive = 1 → Usuario activo
-IsActive = 0 → Usuario inactivo
-UI (WPF)
-Usuarios inactivos:
-Fila en gris
-Botón editar deshabilitado
-Botón activar visible
+---
 
-🧠 Patrones implementados
-CQRS (Commands & Queries)
-Repository Pattern
-Dependency Injection
-MVVM (WPF)
-Soft Delete Pattern
-Audit Logging Pattern
+## 🎯 Soft Delete (Comportamiento)
 
-⚠️ Consideraciones
-No se eliminan datos físicamente (soft delete)
-Validaciones duplicadas:
-UI
-Backend
-Base de datos
-Uso intensivo de Stored Procedures
+- IsActive = 1 → Activo  
+- IsActive = 0 → Inactivo  
 
+### UI (WPF)
+- Fila en gris si está inactivo  
+- Botón editar deshabilitado  
+- Botón activar visible  
+
+---
+
+## 🧠 Patrones implementados
+
+- CQRS  
+- Repository Pattern  
+- Dependency Injection  
+- MVVM  
+- Soft Delete  
+- Audit Logging  
+
+---
+
+## ⚠️ Consideraciones
+
+- No hay eliminación física  
+- Validaciones en:
+  - UI  
+  - Backend  
+  - Base de datos  
+- Uso de Stored Procedures  
