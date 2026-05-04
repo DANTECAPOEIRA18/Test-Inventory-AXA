@@ -14,12 +14,12 @@ Sistema de gestión de usuarios, áreas, roles y auditoría basado en arquitectu
 ```mermaid
 flowchart LR
 
-    UI[WPF Client\n(MVVM)]
-    API[Inventory.API\nControllers]
-    APP[Application Layer\nCQRS + Handlers]
-    DOMAIN[Domain Layer\nEntities + Interfaces]
-    INFRA[Infrastructure\nRepositories + ADO.NET]
-    DB[(SQL Server\nStored Procedures)]
+    UI["WPF Client (MVVM)"]
+    API["Inventory.API Controllers"]
+    APP["Application Layer (CQRS + Handlers)"]
+    DOMAIN["Domain Layer (Entities + Interfaces)"]
+    INFRA["Infrastructure (Repositories + ADO.NET)"]
+    DB[("SQL Server (Stored Procedures)")]
 
     UI --> API
     API --> APP
@@ -30,10 +30,10 @@ flowchart LR
 
 ---
 
-# 🔁 📊 DIAGRAMA 2 — FLUJO CQRS (COMMAND)
+# ✅ DIAGRAMA CQRS COMMAND (CORREGIDO)
 
 ```md
-## 🔁 Flujo CQRS - Command (Ej: Crear Usuario)
+## 🔁 Flujo CQRS - Command
 
 ```mermaid
 sequenceDiagram
@@ -49,19 +49,18 @@ sequenceDiagram
     API->>MediatR: Send(CreateUserCommand)
     MediatR->>Handler: Handle()
     Handler->>Repo: Create(user)
-    Repo->>DB: Execute SP (sp_CreateUser)
+    Repo->>DB: Execute SP sp_CreateUser
     DB-->>Repo: OK
     Repo-->>Handler: OK
     Handler-->>API: OK
     API-->>UI: 200 OK
 
-
 ---
 
-# 🔍 📊 DIAGRAMA 3 — FLUJO CQRS (QUERY)
+# ✅ DIAGRAMA CQRS QUERY (CORREGIDO)
 
 ```md
-## 🔍 Flujo CQRS - Query (Ej: Obtener Usuarios)
+## 🔍 Flujo CQRS - Query
 
 ```mermaid
 sequenceDiagram
@@ -77,53 +76,11 @@ sequenceDiagram
     API->>MediatR: Send(GetUsersQuery)
     MediatR->>Handler: Handle()
     Handler->>Repo: GetLast()
-    Repo->>DB: Execute SP (sp_GetLastUsers)
-    DB-->>Repo: ResultSet
+    Repo->>DB: Execute SP sp_GetLastUsers
+    DB-->>Repo: Result
     Repo-->>Handler: Data
     Handler-->>API: DTO List
     API-->>UI: JSON
-
----
-
-# 🧾 📊 DIAGRAMA 4 — SOFT DELETE + ACTIVACIÓN
-
-```md
-## ♻️ Flujo Soft Delete y Activación
-
-```mermaid
-flowchart TD
-
-    A[Usuario activo\nIsActive = 1]
-    B[Eliminar usuario\nDELETE]
-    C[IsActive = 0\n(Inactivo)]
-    D[UI bloquea edición]
-    E[Botón Activar]
-    F[PUT /activate]
-    G[IsActive = 1]
-
-    A --> B
-    B --> C
-    C --> D
-    C --> E
-    E --> F
-    F --> G
-
-
----
-
-# 🧠 📊 DIAGRAMA 5 — RELACIÓN DE CAPAS
-
-```md
-## 🧩 Dependencias por capas
-
-```mermaid
-flowchart TD
-
-    API --> Application
-    Application --> Domain
-    Application --> Infrastructure
-    Infrastructure --> Domain
----
 
 # 🧩 Tecnologías utilizadas
 
