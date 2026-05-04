@@ -74,12 +74,14 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Helpers\InverseBooleanToVisibilityConverter.cs" />
     <Compile Include="Helpers\RelayCommand.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\AreaVm.cs" />
     <Compile Include="Models\RoleVm.cs" />
+    <Compile Include="Models\TypeDocumentVm.cs" />
     <Compile Include="Models\UserVm.cs" />
     <Compile Include="Services\ApiService.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
@@ -88,7 +90,6 @@
     <Compile Include="Views\EditUserWindow.xaml.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\BooleanToVisibilityConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

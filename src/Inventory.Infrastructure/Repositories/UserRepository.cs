@@ -29,6 +29,9 @@ namespace Inventory.Infrastructure.Repositories
                     cmd.Parameters.AddWithValue("@Id", user.Id);
                     cmd.Parameters.AddWithValue("@Name", user.Name);
                     cmd.Parameters.AddWithValue("@Contact", user.Contact);
+                    cmd.Parameters.AddWithValue("@Email", user.Email);
+                    cmd.Parameters.AddWithValue("@Document", user.DocumentNumber);
+                    cmd.Parameters.AddWithValue("@DocumentId", user.TypeDocumentId);
                     cmd.Parameters.AddWithValue("@AreaId", user.AreaId);
                     cmd.Parameters.AddWithValue("@RoleId", user.RoleId);
                     cmd.Parameters.AddWithValue("@UserAction", "SYSTEM");
@@ -59,10 +62,15 @@ namespace Inventory.Infrastructure.Repositories
                                 (Guid)reader["Id"],
                                 reader["Name"].ToString(),
                                 reader["Contact"].ToString(),
+                                reader["Email"].ToString(),
+                                (int)reader["DocumentNumber"],
                                 (Guid)reader["AreaId"],
                                 (Guid)reader["RoleId"],
+                                (Guid)reader["DocumentTypeId"],
                                 reader["AreaName"].ToString(),
-                                reader["RoleName"].ToString()
+                                reader["RoleName"].ToString(),
+                                reader["DocumentName"].ToString(),
+                                (bool)reader["IsActive"]
                             ));
                         }
                     }
@@ -72,7 +80,7 @@ namespace Inventory.Infrastructure.Repositories
             return list;
         }
 
-        public async Task UpdateContact(Guid userId, string contact, Guid AreaId, Guid RoleId)
+        public async Task UpdateContact(Guid userId, string contact, string Email, Guid AreaId, Guid RoleId)
         {
             using (var conn = _factory.Create())
             {
@@ -82,6 +90,7 @@ namespace Inventory.Infrastructure.Repositories
 
                     cmd.Parameters.AddWithValue("@UserId", userId);
                     cmd.Parameters.AddWithValue("@Contact", contact);
+                    cmd.Parameters.AddWithValue("@Email", Email);
                     cmd.Parameters.AddWithValue("@AreaId", AreaId);
                     cmd.Parameters.AddWithValue("@RoleId", RoleId);
                     cmd.Parameters.AddWithValue("@UserAction", "SYSTEM");
@@ -115,6 +124,22 @@ namespace Inventory.Infrastructure.Repositories
             using (var conn = _factory.Create())
             {
                 using (var cmd = new SqlCommand("sp_DeleteUser", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@UserId", userId);
+                    cmd.Parameters.AddWithValue("@UserAction", "SYSTEM");
+
+                    await conn.OpenAsync();
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
+        }
+        public async Task Activte(Guid userId)
+        {
+            using (var conn = _factory.Create())
+            {
+                using (var cmd = new SqlCommand("sp_ActivateUser", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 

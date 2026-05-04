@@ -44,12 +44,14 @@
     <Compile Include="Entities\Area.cs" />
     <Compile Include="Entities\AuditLog.cs" />
     <Compile Include="Entities\Role.cs" />
+    <Compile Include="Entities\TypeDocument.cs" />
     <Compile Include="Entities\User.cs" />
     <Compile Include="Enums\AuditAction.cs" />
     <Compile Include="Enums\UserStatus.cs" />
     <Compile Include="Interfaces\IAreaRepository.cs" />
     <Compile Include="Interfaces\IAuditRepository.cs" />
     <Compile Include="Interfaces\IRoleRepository.cs" />
+    <Compile Include="Interfaces\ITypeDocumentRepository.cs" />
     <Compile Include="Interfaces\IUserRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ValueObjects\Contact.cs" />

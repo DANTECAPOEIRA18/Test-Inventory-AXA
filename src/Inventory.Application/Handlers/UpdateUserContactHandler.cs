@@ -24,7 +24,10 @@ namespace Inventory.Application.Handlers
             if (string.IsNullOrWhiteSpace(cmd.Contact))
                 throw new Exception("Contact is required");
 
-            await _repo.UpdateContact(cmd.UserId, cmd.Contact, cmd.AreaId, cmd.RoleId);
+            if (string.IsNullOrWhiteSpace(cmd.Email))
+                throw new Exception("Email is required");
+
+            await _repo.UpdateContact(cmd.UserId, cmd.Contact, cmd.Email, cmd.AreaId, cmd.RoleId);
 
             return Unit.Value;
         }

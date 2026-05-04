@@ -1,16 +1,19 @@
 ﻿using Inventory.WPF.Helpers;
 using Inventory.WPF.Models;
 using Inventory.WPF.Services;
+using Inventory.WPF.Views;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Threading;
-using Inventory.WPF.Views;
 
 namespace Inventory.WPF.ViewModels
 {
-    public class MainViewModel : BaseViewModel
+    public class MainViewModel : BaseViewModel, IDataErrorInfo
     {
         private readonly ApiService _api = new ApiService();
         private DispatcherTimer _timer;
@@ -28,37 +31,123 @@ namespace Inventory.WPF.ViewModels
         public ObservableCollection<UserVm> Users { get; set; } = new ObservableCollection<UserVm>();
         public ObservableCollection<AreaVm> Areas { get; set; } = new ObservableCollection<AreaVm>();
         public ObservableCollection<RoleVm> Roles { get; set; } = new ObservableCollection<RoleVm>();
+        public ObservableCollection<TypeDocumentVm> TypeDocuments { get; set; } = new ObservableCollection<TypeDocumentVm>();
 
         // =========================
-        // FORM FIELDS (NOTIFY)
+        // FORM FIELDS
         // =========================
         private string _name;
         public string Name
         {
             get => _name;
-            set { _name = value; OnPropertyChanged(); }
+            set
+            {
+                _name = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasErrors));
+                CommandManager.InvalidateRequerySuggested();
+            }
         }
 
         private string _contact;
         public string Contact
         {
             get => _contact;
-            set { _contact = value; OnPropertyChanged(); }
+            set
+            {
+                _contact = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasErrors));
+                CommandManager.InvalidateRequerySuggested();
+            }
         }
 
-        private AreaVm _selectedArea;
-        public AreaVm SelectedArea
+        private string _email;
+        public string Email
         {
-            get => _selectedArea;
-            set { _selectedArea = value; OnPropertyChanged(); }
+            get => _email;
+            set
+            {
+                _email = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasErrors));
+                CommandManager.InvalidateRequerySuggested();
+            }
         }
 
-        private RoleVm _selectedRole;
-        public RoleVm SelectedRole
+        private string _documentId;
+        public string DocumentId
         {
-            get => _selectedRole;
-            set { _selectedRole = value; OnPropertyChanged(); }
+            get => _documentId;
+            set
+            {
+                _documentId = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasErrors));
+                CommandManager.InvalidateRequerySuggested();
+            }
         }
+
+        public AreaVm SelectedArea { get; set; }
+        public RoleVm SelectedRole { get; set; }
+        public TypeDocumentVm SelectedTypedocument { get; set; }
+
+        // =========================
+        // VALIDACIONES
+        // =========================
+        public string Error => null;
+
+        public string this[string columnName]
+        {
+            get
+            {
+                switch (columnName)
+                {
+                    case nameof(Name):
+                        if (string.IsNullOrWhiteSpace(Name))
+                            return "Nombre requerido";
+
+                        if (!Regex.IsMatch(Name, @"^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$"))
+                            return "Solo letras";
+
+                        if (Name.EndsWith(" "))
+                            return "No debe terminar en espacio";
+                        break;
+
+                    case nameof(Contact):
+                        if (string.IsNullOrWhiteSpace(Contact))
+                            return "Contacto requerido";
+
+                        if (!Regex.IsMatch(Contact, @"^\d{1,10}$"))
+                            return "Máx 10 números";
+                        break;
+
+                    case nameof(Email):
+                        if (string.IsNullOrWhiteSpace(Email))
+                            return "Email requerido";
+
+                        if (!Regex.IsMatch(Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+                            return "Email inválido";
+                        break;
+
+                    case nameof(DocumentId):
+                        if (string.IsNullOrWhiteSpace(DocumentId))
+                            return "Documento requerido";
+
+                        if (!Regex.IsMatch(DocumentId, @"^\d{1,10}$"))
+                            return "Máx 10 números";
+                        break;
+                }
+
+                return null;
+            }
+        }
+
+        public bool HasErrors =>
+            this[nameof(Name)] != null ||
+            this[nameof(Contact)] != null ||
+            this[nameof(Email)] != null ||
+            this[nameof(DocumentId)] != null;
 
         // =========================
         // UI STATE
@@ -80,42 +169,72 @@ namespace Inventory.WPF.ViewModels
         // =========================
         // COMMANDS
         // =========================
-        public RelayCommand LoadUsersCommand => new RelayCommand(async _ => await LoadUsers());
-        public RelayCommand CreateUserCommand => new RelayCommand(async _ => await CreateUser());
-        public RelayCommand EditUserCommand => new RelayCommand(OpenEditModal);
+        public RelayCommand CreateUserCommand =>
+            new RelayCommand(async _ => await CreateUser(), _ => !HasErrors);
+
+        public RelayCommand EditUserCommand =>
+            new RelayCommand(OpenEditModal);
+
+        public RelayCommand DeleteUserCommand =>
+            new RelayCommand(async u => await DeleteUser(u));
+
+        public RelayCommand ActivateUserCommand =>
+            new RelayCommand(async u => await ActivateUser(u));
 
         // =========================
-        // LOAD USERS
+        // METHODS
         // =========================
-        private async Task LoadUsers()
+
+        private async Task DeleteUser(object parameter)
         {
-            if (_isLoading) return;
+            var user = parameter as UserVm;
+            if (user == null) return;
 
-            _isLoading = true;
+            var confirm = MessageBox.Show(
+                $"¿Eliminar usuario {user.Name}?",
+                "Confirmación",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (confirm != MessageBoxResult.Yes)
+                return;
 
             try
             {
                 LoadingVisibility = Visibility.Visible;
 
-                var users = await _api.GetUsers();
+                await _api.DeleteUser(user.Id);
 
-                Users.Clear();
-                foreach (var u in users)
-                    Users.Add(u);
+                await LoadUsers();
             }
             finally
             {
                 LoadingVisibility = Visibility.Collapsed;
-                _isLoading = false;
             }
         }
 
-        // =========================
-        // CREATE USER
-        // =========================
+        private async Task ActivateUser(object parameter)
+        {
+            var user = parameter as UserVm;
+            if (user == null) return;
+
+            try
+            {
+                LoadingVisibility = Visibility.Visible;
+
+                await _api.ActivateUser(user.Id);
+
+                await LoadUsers();
+            }
+            finally
+            {
+                LoadingVisibility = Visibility.Collapsed;
+            }
+        }
+
         private async Task CreateUser()
         {
-            if (SelectedArea == null || SelectedRole == null)
+            if (HasErrors || SelectedArea == null || SelectedRole == null || SelectedTypedocument == null)
                 return;
 
             try
@@ -127,6 +246,9 @@ namespace Inventory.WPF.ViewModels
                 {
                     Name = Name,
                     Contact = Contact,
+                    Email = Email,
+                    DocumentNumber = int.Parse(DocumentId),
+                    TypeDocumentId = SelectedTypedocument.Id,
                     AreaId = SelectedArea.Id,
                     RoleId = SelectedRole.Id
                 };
@@ -135,16 +257,13 @@ namespace Inventory.WPF.ViewModels
 
                 await LoadUsers();
 
-                // limpiar formulario
                 Name = "";
                 Contact = "";
+                Email = "";
+                DocumentId = "";
                 SelectedArea = null;
                 SelectedRole = null;
-
-                OnPropertyChanged(nameof(Name));
-                OnPropertyChanged(nameof(Contact));
-                OnPropertyChanged(nameof(SelectedArea));
-                OnPropertyChanged(nameof(SelectedRole));
+                SelectedTypedocument = null;
             }
             finally
             {
@@ -153,71 +272,12 @@ namespace Inventory.WPF.ViewModels
             }
         }
 
-        // =========================
-        // LOAD COMBOS
-        // =========================
-        public async Task LoadCombos()
-        {
-            var areas = await _api.GetAreas();
-            Areas.Clear();
-            foreach (var a in areas)
-                Areas.Add(a);
-
-            var roles = await _api.GetRoles();
-            Roles.Clear();
-            foreach (var r in roles)
-                Roles.Add(r);
-        }
-
-        // =========================
-        // INITIAL LOAD
-        // =========================
-        private async Task LoadInitialData()
-        {
-            await LoadCombos();   // combos primero
-            await LoadUsers();    // luego tabla
-        }
-
-        // =========================
-        // AUTO REFRESH
-        // =========================
-        private void StartAutoRefresh()
-        {
-            _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromSeconds(15);
-
-            _timer.Tick += async (s, e) =>
-            {
-                await LoadUsers();
-                //await LoadCombos();
-            };
-
-            _timer.Start();
-        }
-
-        private void StopAutoRefresh()
-        {
-            if (_timer != null)
-                _timer.Stop();
-        }
-
-        private void ResumeAutoRefresh()
-        {
-            if (_timer != null)
-                _timer.Start();
-        }
-
-        // =========================
-        // Open Modal
-        // =========================
         private void OpenEditModal(object parameter)
         {
             var user = parameter as UserVm;
+            if (user == null) return;
 
-            if (user == null)
-                return;
-
-            StopAutoRefresh();
+            _timer?.Stop();
 
             var vm = new EditUserViewModel(user, Areas, Roles, _api);
 
@@ -228,9 +288,65 @@ namespace Inventory.WPF.ViewModels
 
             window.ShowDialog();
 
-            ResumeAutoRefresh();
+            _timer?.Start();
 
             _ = LoadUsers();
+        }
+
+        private async Task LoadUsers()
+        {
+            if (_isLoading) return;
+            _isLoading = true;
+
+            try
+            {
+                var users = await _api.GetUsers();
+
+                Users.Clear();
+                foreach (var u in users)
+                    Users.Add(u);
+            }
+            finally
+            {
+                _isLoading = false;
+            }
+        }
+
+        private async Task LoadCombos()
+        {
+            var areas = await _api.GetAreas();
+            Areas.Clear();
+            foreach (var a in areas)
+                Areas.Add(a);
+
+            var roles = await _api.GetRoles();
+            Roles.Clear();
+            foreach (var r in roles)
+                Roles.Add(r);
+
+            var types = await _api.GetTypeDocuments();
+            TypeDocuments.Clear();
+            foreach (var t in types)
+                TypeDocuments.Add(t);
+        }
+
+        private async Task LoadInitialData()
+        {
+            await LoadCombos();
+            await LoadUsers();
+        }
+
+        private void StartAutoRefresh()
+        {
+            _timer = new DispatcherTimer();
+            _timer.Interval = TimeSpan.FromSeconds(5);
+
+            _timer.Tick += async (s, e) =>
+            {
+                await LoadUsers();
+            };
+
+            _timer.Start();
         }
     }
 }

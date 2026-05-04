@@ -9,8 +9,9 @@ namespace Inventory.Domain.Interfaces
     {
         Task Create(User user);
         Task<List<User>> GetLast();
-        Task UpdateContact(Guid userId, string contact, Guid AreaId, Guid RoleId);
+        Task UpdateContact(Guid userId, string contact, string Email, Guid AreaId, Guid RoleId);
         Task AssignArea(Guid userId, Guid areaId);
         Task Delete(Guid userId);
+        Task Activte(Guid userId);
     }
 }

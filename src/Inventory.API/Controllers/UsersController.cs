@@ -67,5 +67,15 @@ namespace Inventory.API.Controllers
             await _mediator.Send(new DeleteUserCommand { UserId = id });
             return Ok();
         }
+
+        /// <summary>
+        /// Activar usuario
+        /// </summary>
+        [HttpPut("{id}/activate")]
+        public async Task<IActionResult> Activate(Guid id)
+        {
+            await _mediator.Send(new ActivateUserCommand { UserId = id });
+            return Ok();
+        }
     }
 }

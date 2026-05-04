@@ -99,6 +99,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\ActivateUserCommand.cs" />
     <Compile Include="Commands\AssignAreaCommand.cs" />
     <Compile Include="Commands\CreateAreaCommand.cs" />
     <Compile Include="Commands\CreateRoleCommand.cs" />
@@ -108,19 +109,23 @@
     <Compile Include="DTOs\AreaDto.cs" />
     <Compile Include="DTOs\AuditDto.cs" />
     <Compile Include="DTOs\RoleDto.cs" />
+    <Compile Include="DTOs\TypeDocumentDto.cs" />
     <Compile Include="DTOs\UserDto.cs" />
+    <Compile Include="Handlers\ActivateUserHandler.cs" />
     <Compile Include="Handlers\AssignAreaHandler.cs" />
     <Compile Include="Handlers\CreateUserHandler.cs" />
     <Compile Include="Handlers\DeleteUserHandler.cs" />
     <Compile Include="Handlers\GetAreasHandler.cs" />
     <Compile Include="Handlers\GetAuditHandler.cs" />
     <Compile Include="Handlers\GetRolesHandler.cs" />
+    <Compile Include="Handlers\GetTypeDocumentsHandler.cs" />
     <Compile Include="Handlers\GetUsersHandler.cs" />
     <Compile Include="Handlers\UpdateUserContactHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Queries\GetAreasQuery.cs" />
     <Compile Include="Queries\GetAuditQuery.cs" />
     <Compile Include="Queries\GetRolesQuery.cs" />
+    <Compile Include="Queries\GetTypeDocumentsQuery.cs" />
     <Compile Include="Queries\GetUsersQuery.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -43,9 +43,11 @@ namespace Inventory.Application.Handlers
                 Name = u.Name,
                 Contact = u.Contact,
                 IsActive = u.IsActive,
-
+                Email = u.Email,
+                DocumentNumber = u.DocumentNumber,
                 AreaName = u.AreaName,
                 RoleName = u.RoleName,
+                TypeDocumentName = u.TypeDocumentName,
             }).ToList();
         }
     }

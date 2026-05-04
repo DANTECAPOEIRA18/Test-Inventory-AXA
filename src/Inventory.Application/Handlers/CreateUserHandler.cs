@@ -28,10 +28,15 @@ namespace Inventory.Application.Handlers
                 userId,
                 cmd.Name,
                 cmd.Contact,
+                cmd.Email,
+                cmd.DocumentNumber,
                 cmd.AreaId,
                 cmd.RoleId,
+                cmd.TypeDocumentId,
                 "",
-                ""
+                "",
+                "",
+                true
             );
 
             await _repo.Create(user);

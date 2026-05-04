@@ -7,6 +7,23 @@
         Background="#f5f7fa"
         WindowState="Maximized">
 
+    <Window.Resources>
+
+        <!-- VALIDACIÓN -->
+        <Style TargetType="TextBox">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="BorderBrush" Value="Red"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="ToolTip"
+                        Value="{Binding RelativeSource={RelativeSource Self},
+                        Path=(Validation.Errors)[0].ErrorContent}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+    </Window.Resources>
+
     <Grid Margin="10">
 
         <Grid.ColumnDefinitions>
@@ -14,7 +31,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- PANEL IZQUIERDO -->
+        <!-- ================= LEFT PANEL ================= -->
         <Border Background="White" CornerRadius="10" Padding="15" Margin="5">
             <StackPanel IsEnabled="{Binding IsFormEnabled}">
 
@@ -23,29 +40,40 @@
                            FontWeight="Bold"
                            Margin="0,0,0,15"/>
 
-                <!-- Nombre -->
                 <TextBlock Text="Nombre"/>
-                <TextBox Text="{Binding Name}" Height="30"/>
+                <TextBox Height="30"
+                         Text="{Binding Name, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
 
-                <!-- Contacto -->
                 <TextBlock Text="Contacto" Margin="0,10,0,0"/>
-                <TextBox Text="{Binding Contact}" Height="30"/>
+                <TextBox Height="30"
+                         Text="{Binding Contact, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
 
-                <!-- Área -->
+                <TextBlock Text="Email" Margin="0,10,0,0"/>
+                <TextBox Height="30"
+                         Text="{Binding Email, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
+
                 <TextBlock Text="Área" Margin="0,10,0,0"/>
                 <ComboBox ItemsSource="{Binding Areas}"
                           SelectedItem="{Binding SelectedArea}"
                           DisplayMemberPath="Name"
                           Height="30"/>
 
-                <!-- Rol -->
                 <TextBlock Text="Rol" Margin="0,10,0,0"/>
                 <ComboBox ItemsSource="{Binding Roles}"
                           SelectedItem="{Binding SelectedRole}"
                           DisplayMemberPath="Name"
                           Height="30"/>
 
-                <!-- Botón -->
+                <TextBlock Text="Tipo Documento" Margin="0,10,0,0"/>
+                <ComboBox ItemsSource="{Binding TypeDocuments}"
+                          SelectedItem="{Binding SelectedTypedocument}"
+                          DisplayMemberPath="Name"
+                          Height="30"/>
+
+                <TextBlock Text="Numero Documento" Margin="0,10,0,0"/>
+                <TextBox Height="30"
+                         Text="{Binding DocumentId, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"/>
+
                 <Button Content="Guardar"
                         Command="{Binding CreateUserCommand}"
                         Background="#0d6efd"
@@ -58,7 +86,7 @@
             </StackPanel>
         </Border>
 
-        <!-- PANEL DERECHO -->
+        <!-- ================= RIGHT PANEL ================= -->
         <Border Grid.Column="1"
                 Background="White"
                 CornerRadius="10"
@@ -67,68 +95,122 @@
 
             <Grid>
 
-                <!-- TABLA -->
                 <DataGrid ItemsSource="{Binding Users}"
-                      AutoGenerateColumns="False"
-                      CanUserAddRows="False"
-                      IsReadOnly="True"
-                      CanUserDeleteRows="False"
-                      CanUserResizeRows="False"
-                      CanUserSortColumns="True"
-                      SelectionMode="Single"
-                      SelectionUnit="FullRow"
-                      HeadersVisibility="Column"
-                      RowHeight="30"
-                      GridLinesVisibility="None"
-                      Background="White">
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          IsReadOnly="True"
+                          SelectionMode="Single"
+                          SelectionUnit="FullRow"
+                          Background="White">
+
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="Background" Value="White"/>
+                            <Setter Property="Foreground" Value="Black"/>
+
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsActive}" Value="False">
+                                    <Setter Property="Background" Value="#FFFFC386"/>
+                                    <Setter Property="Foreground" Value="#9e9e9e"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.RowStyle>
 
                     <DataGrid.Columns>
 
+                        <DataGridTextColumn Header="Identificación" Binding="{Binding DocumentNumber}" Width="*"/>
                         <DataGridTextColumn Header="Nombre" Binding="{Binding Name}" Width="*"/>
                         <DataGridTextColumn Header="Contacto" Binding="{Binding Contact}" Width="*"/>
+                        <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*"/>
                         <DataGridTextColumn Header="Área" Binding="{Binding AreaName}" Width="*"/>
                         <DataGridTextColumn Header="Rol" Binding="{Binding RoleName}" Width="*"/>
 
-                        <!-- BOTÓN EDITAR -->
-                        <DataGridTemplateColumn Header="Acciones" Width="100">
+                        <!-- ================= ACCIONES ================= -->
+                        <DataGridTemplateColumn Header="Acciones" Width="150">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Content="Editar"
-                        Padding="5"
-                        Background="#ffc107"
-                        Cursor="Hand"
-                        Command="{Binding DataContext.EditUserCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                        CommandParameter="{Binding}"/>
+
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+
+                                        <!-- EDITAR -->
+                                        <Button Width="30"
+                                                Height="30"
+                                                Margin="2"
+                                                Background="#ffc107"
+                                                BorderThickness="0"
+                                                Cursor="Hand"
+                                                IsEnabled="{Binding IsActive}"
+                                                Command="{Binding DataContext.EditUserCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                CommandParameter="{Binding}">
+                                            <TextBlock Text="✏" FontSize="14"/>
+                                        </Button>
+
+                                        <!-- ELIMINAR -->
+                                        <Button Width="30"
+                                                Height="30"
+                                                Margin="2"
+                                                Background="#dc3545"
+                                                Foreground="White"
+                                                BorderThickness="0"
+                                                Cursor="Hand"
+                                                IsEnabled="{Binding IsActive}"
+                                                Command="{Binding DataContext.DeleteUserCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                CommandParameter="{Binding}">
+                                            <TextBlock Text="🗑" FontSize="14"/>
+                                        </Button>
+
+                                        <!-- ACTIVAR (SOLO SI ESTA INACTIVO) -->
+                                        <Button Width="30"
+                                                Height="30"
+                                                Margin="2"
+                                                Background="#198754"
+                                                Foreground="White"
+                                                BorderThickness="0"
+                                                Cursor="Hand"
+                                                Command="{Binding DataContext.ActivateUserCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                CommandParameter="{Binding}">
+
+                                            <Button.Style>
+                                                <Style TargetType="Button">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsActive}" Value="False">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+
+                                            <TextBlock Text="✔" FontSize="14"/>
+                                        </Button>
+
+                                    </StackPanel>
+
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
                     </DataGrid.Columns>
-
                 </DataGrid>
 
-                <!-- LOADING SOLO TABLA -->
+                <!-- LOADING -->
                 <Grid Background="#80000000"
                       Visibility="{Binding LoadingVisibility}">
-
                     <Border Background="White"
                             Padding="20"
                             CornerRadius="10"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center">
-
                         <StackPanel>
                             <ProgressBar Width="200"
                                          Height="20"
                                          IsIndeterminate="True"/>
-
                             <TextBlock Text="Procesando..."
                                        Margin="0,10,0,0"
                                        HorizontalAlignment="Center"/>
                         </StackPanel>
-
                     </Border>
-
                 </Grid>
 
             </Grid>

@@ -38,6 +38,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IAuditRepository, AuditRepository>();
+builder.Services.AddScoped<ITypeDocumentRepository, TypeDocumentRepository>();
 
 var app = builder.Build();
 

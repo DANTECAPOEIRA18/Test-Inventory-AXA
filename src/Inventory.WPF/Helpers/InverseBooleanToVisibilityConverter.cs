@@ -5,22 +5,26 @@ using System.Windows.Data;
 
 namespace Inventory.WPF.Helpers
 {
-    public class BooleanToVisibilityConverter : IValueConverter
+    public class InverseBooleanToVisibilityConverter : IValueConverter
     {
-        // bool -> Visibility
+        // bool → Visibility (invertido)
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is bool isVisible)
-                return isVisible ? Visibility.Visible : Visibility.Collapsed;
+            if (value is bool isActive)
+            {
+                return isActive ? Visibility.Collapsed : Visibility.Visible;
+            }
 
             return Visibility.Collapsed;
         }
 
-        // Visibility -> bool
+        // No lo usamos pero WPF lo exige
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is Visibility visibility)
-                return visibility == Visibility.Visible;
+            {
+                return visibility != Visibility.Visible;
+            }
 
             return false;
         }

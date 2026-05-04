@@ -39,11 +39,40 @@ namespace Inventory.WPF.Services
             await _http.PostAsync($"{_baseUrl}users", content);
         }
 
+        public async Task DeleteUser(Guid id)
+        {
+            var response = await _http.DeleteAsync($"{_baseUrl}users/{id}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error eliminando usuario: {error}");
+            }
+        }
+
+        public async Task ActivateUser(Guid id)
+        {
+            var response = await _http.PutAsync($"{_baseUrl}users/{id}/activate",null);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error activando usuario: {error}");
+            }
+        }
+
         public async Task<List<AreaVm>> GetAreas()
         {
             var response = await _http.GetAsync($"{_baseUrl}areas");
             var json = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<AreaVm>>(json);
+        }
+
+        public async Task<List<TypeDocumentVm>> GetTypeDocuments()
+        {
+            var response = await _http.GetAsync($"{_baseUrl}type-documents");
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<TypeDocumentVm>>(json);
         }
 
         public async Task<List<RoleVm>> GetRoles()
@@ -53,13 +82,14 @@ namespace Inventory.WPF.Services
             return JsonConvert.DeserializeObject<List<RoleVm>>(json);
         }
 
-        public async Task UpdateUserContact(Guid userId, string contact, Guid AreaId, Guid RoleId)
+        public async Task UpdateUserContact(Guid userId, string contact, string email, Guid AreaId, Guid RoleId)
         {
             var body = new UserVm
             {
                 Contact = contact,
                 AreaId = AreaId,
-                RoleId = RoleId
+                RoleId = RoleId,
+                Email = email
             };
 
             var json = JsonConvert.SerializeObject(body);
