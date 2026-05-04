@@ -60,4 +60,26 @@
     <Folder Include="StoredProcedures" />
     <Folder Include="Functions" />
   </ItemGroup>
+  <ItemGroup>
+    <Build Include="Tables\Areas.sql" />
+    <Build Include="Tables\AuditLog.sql" />
+    <Build Include="Tables\DocumentTypes.sql" />
+    <Build Include="Tables\Roles.sql" />
+    <Build Include="Tables\Users.sql" />
+    <Build Include="StoredProcedures\sp_ActivateUser.sql" />
+    <Build Include="StoredProcedures\sp_CreateArea.sql" />
+    <Build Include="StoredProcedures\sp_CreateRole.sql" />
+    <Build Include="StoredProcedures\sp_CreateTypeDocument.sql" />
+    <Build Include="StoredProcedures\sp_CreateUser.sql" />
+    <Build Include="StoredProcedures\sp_DeleteUser.sql" />
+    <Build Include="StoredProcedures\sp_GetAreas.sql" />
+    <Build Include="StoredProcedures\sp_GetAudit.sql" />
+    <Build Include="StoredProcedures\sp_GetAuditByUser.sql" />
+    <Build Include="StoredProcedures\sp_GetAuditLog.sql" />
+    <Build Include="StoredProcedures\sp_GetLastUsers.sql" />
+    <Build Include="StoredProcedures\sp_GetRoles.sql" />
+    <Build Include="StoredProcedures\sp_GetTypeDocuments.sql" />
+    <Build Include="StoredProcedures\sp_UpdateUserContact.sql" />
+    <Build Include="Functions\fn_NormalizeName.sql" />
+  </ItemGroup>
 </Project>
