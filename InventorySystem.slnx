@@ -9,4 +9,5 @@
   <Project Path="src/Inventory.Domain/Inventory.Domain.csproj" Id="146f9419-d40a-40ae-a1ce-05ae926cd463" />
   <Project Path="src/Inventory.Infrastructure/Inventory.Infrastructure.csproj" Id="4c671504-af87-4ca1-a6ea-957ad1080a79" />
   <Project Path="src/Inventory.WPF/Inventory.WPF.csproj" Id="f0549096-719a-4498-928b-5a027ca092ec" />
+  <Project Path="tests/Inventory.Tests/Inventory.Tests.csproj" />
 </Solution>
